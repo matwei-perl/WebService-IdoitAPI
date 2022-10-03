@@ -4,6 +4,16 @@ use 5.006;
 use strict;
 use warnings;
 
+our $VERSION = '0.01';
+
+sub new {
+}
+
+1; # End of WebService::IdoitAPI
+
+__DATA__
+
+
 =head1 NAME
 
 WebService::IdoitAPI - The great new WebService::IdoitAPI!
@@ -11,11 +21,6 @@ WebService::IdoitAPI - The great new WebService::IdoitAPI!
 =head1 VERSION
 
 Version 0.01
-
-=cut
-
-our $VERSION = '0.01';
-
 
 =head1 SYNOPSIS
 
@@ -35,19 +40,7 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =head1 SUBROUTINES/METHODS
 
-=head2 function1
-
-=cut
-
-sub function1 {
-}
-
-=head2 function2
-
-=cut
-
-sub function2 {
-}
+=head2 new
 
 =head1 AUTHOR
 
@@ -100,6 +93,3 @@ This is free software, licensed under:
   The Artistic License 2.0 (GPL Compatible)
 
 
-=cut
-
-1; # End of WebService::IdoitAPI
