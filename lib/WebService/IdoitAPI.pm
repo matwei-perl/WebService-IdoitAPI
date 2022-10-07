@@ -1,18 +1,68 @@
+# vim: set sw=4 ts=4 et si ai:
+#
 package WebService::IdoitAPI;
 
 use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+use JSON::RPC::Legacy::Client;
+
+our $VERSION = '0.1.0';
+
+my @CONFIG_VARS = qw(apikey password url username);
 
 sub new {
+    my ($class,$config) = @_;
+    my $self = {
+        config => {},
+        version => '2.0',
+    };
+
+    if (defined $config) {
+        for my $cv (@CONFIG_VARS) {
+            if (exists $config->{$cv}) {
+                $self->{config}->{$cv} = $config->{$cv};
+            }
+        }
+    }
+    bless($self, $class);
+    return $self;
 }
+
+sub request {
+    my ($self,$request) = @_;
+    if (defined $request) {
+        my $client;
+        if (exists $self->{client}) {
+            $client = $self->{client};
+        }
+        else {
+            $client = new JSON::RPC::Legacy::Client;
+            $self->{client} = $client;
+        }
+        $request->{version} = "2.0"
+            unless (defined $request->{version});
+        $request->{id} = 1
+            unless (defined $request->{id});
+        $request->{params}->{language} = 'en'
+            unless (defined $request->{params}->{language});
+        $request->{params}->{apikey} = $self->{config}->{apikey};
+        if (defined $self->{config}->{password}) {
+            $client->{ua}->default_header( 'X-RPC-Auth-Password' => $self->{config}->{password} );
+        }
+        if (defined $self->{config}->{username}) {
+            $client->{ua}->default_header( 'X-RPC-Auth-Username' => $self->{config}->{username} );
+        }
+        my $res = $client->call($self->{config}->{url},$request);
+        return $res;
+    }
+    return undef;
+} # request()
 
 1; # End of WebService::IdoitAPI
 
 __DATA__
-
 
 =head1 NAME
 
@@ -20,27 +70,87 @@ WebService::IdoitAPI - The great new WebService::IdoitAPI!
 
 =head1 VERSION
 
-Version 0.01
+Version 0.1.0
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
-
-Perhaps a little code snippet.
+Allow access to the JSON-RPC-API of i-doit using Perl data structures.
 
     use WebService::IdoitAPI;
 
-    my $foo = WebService::IdoitAPI->new();
-    ...
+    my $config = {
+        apikey => 'your_key_here',
+        password => 'your_password_here',
+        url => 'full_url_to_json_rpc_api',
+        username => 'your_username_here',
+    };
 
-=head1 EXPORT
+    my $idoitapi = WebService::IdoitAPI->new( $config );
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+    my $request = {
+        method => $idoit_method,
+        params => {
+            # your params here
+        }
+    };
+    my $reply = $idoitapi->request($request);
 
 =head1 SUBROUTINES/METHODS
 
 =head2 new
+
+    my $config = {
+        apikey => 'your_key_here',
+        password => 'your_password_here',
+        username => 'your_username_here',
+        url => 'full_url_to_json_rpc_api',
+    };
+
+    my $idoitapi = WebService::IdoitAPI->new( $config );
+
+Create a new C<WebService::IdoitAPI> object
+and provide it with the credentials and location to access the JSON-RPC-API.
+
+Depending on the configuration of your i-doit instance,
+you may need a username and password and an API key,
+or the key may suffice.
+
+=head2 request
+
+    my $req = {
+        method => $idoit_method,
+        params => {
+            # your params here
+        }
+    };
+    my $res = $idoitapi->request($req);
+
+    if ($res) {
+        if ($res->is_error) {
+            print "Error : ", $res->error_message;
+        }
+        else {
+            # you can find the reply in $res->result
+        }
+    }
+    else {
+        print $idoitapi->{client}->status_line;
+    }
+
+Sends the given request as JSON-RPC-API call
+to the configured i-doit instance.
+
+C<$request->{method}> can be any method supported by the i-doit JSON-RPC-API.
+C<$request->{params}> must match that method.
+
+In case of error, the method returns C<undef>.
+Otherwise it returns a JSON::RPC::Legacy::ReturnObject.
+
+The method automatically adds
+the JSON parameters C<version>, C<id> and C<params.language>
+if they are not provided in C<$request>.
+It takes care to add the credentials,
+that were given in the configuration hash to method C<new()>.
 
 =head1 AUTHOR
 
@@ -48,19 +158,18 @@ Mathias Weidner, C<< <mamawe at cpan.org> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-webservice-idoitapi at rt.cpan.org>, or through
-the web interface at L<https://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-IdoitAPI>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-
+Please report any bugs or feature requests
+to C<bug-webservice-idoitapi at rt.cpan.org>,
+or through the web interface
+at L<https://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-IdoitAPI>.
+I will be notified, and then you'll automatically be notified
+of progress on your bug as I make changes.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
     perldoc WebService::IdoitAPI
-
 
 You can also look for information at:
 
@@ -80,9 +189,7 @@ L<https://metacpan.org/release/WebService-IdoitAPI>
 
 =back
 
-
 =head1 ACKNOWLEDGEMENTS
-
 
 =head1 LICENSE AND COPYRIGHT
 
@@ -91,5 +198,4 @@ This software is Copyright (c) 2022 by Mathias Weidner.
 This is free software, licensed under:
 
   The Artistic License 2.0 (GPL Compatible)
-
 

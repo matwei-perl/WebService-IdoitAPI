@@ -1,5 +1,9 @@
 Revision history for WebService-IdoitAPI
 
-0.01    Date/time
+0.1.0	Fri, 07 Oct 2022 08:42:12 +0200
+	- add WebService::IdoitAPI->new()
+	- add method request()
+
+0.01    Mon Oct 3 18:06:27 2022 +0200
         First version, released on an unsuspecting world.
 
