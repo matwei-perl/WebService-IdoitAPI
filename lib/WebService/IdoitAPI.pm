@@ -28,7 +28,7 @@ sub new {
     }
     bless($self, $class);
     return $self;
-}
+} # new()
 
 sub request {
     my ($self,$request) = @_;
@@ -40,6 +40,17 @@ sub request {
         else {
             $client = new JSON::RPC::Legacy::Client;
             $self->{client} = $client;
+            if ($self->{session_id}) {
+                $client->{ua}->default_header('X-RPC-Auth-Session' => $self->{session_id});
+            }
+            else {
+                if (defined $self->{config}->{password}) {
+                    $client->{ua}->default_header( 'X-RPC-Auth-Password' => $self->{config}->{password} );
+                }
+                if (defined $self->{config}->{username}) {
+                    $client->{ua}->default_header( 'X-RPC-Auth-Username' => $self->{config}->{username} );
+                }
+            }
         }
         $request->{version} = "2.0"
             unless (defined $request->{version});
@@ -48,17 +59,35 @@ sub request {
         $request->{params}->{language} = 'en'
             unless (defined $request->{params}->{language});
         $request->{params}->{apikey} = $self->{config}->{apikey};
-        if (defined $self->{config}->{password}) {
-            $client->{ua}->default_header( 'X-RPC-Auth-Password' => $self->{config}->{password} );
-        }
-        if (defined $self->{config}->{username}) {
-            $client->{ua}->default_header( 'X-RPC-Auth-Username' => $self->{config}->{username} );
-        }
         my $res = $client->call($self->{config}->{url},$request);
         return $res;
     }
     return undef;
 } # request()
+
+sub login {
+    my $self = shift;
+
+    my $res = $self->request( { method => 'idoit.login' } );
+    if ($res->{is_success}) {
+        my $h = $self->{client}->{ua}->default_headers();
+        $h->header('X-RPC-Auth-Session' => $res->{content}->{result}->{'session-id'});
+        $h->remove_header('X-RPC-Auth-Username');
+        $h->remove_header('X-RPC-Auth-Password');
+        $self->{session_id} = $res->{content}->{result}->{'session-id'};
+        return $res;
+    }
+    return undef;
+} # login()
+
+sub logout {
+    my $self = shift;
+
+    my $res = $self->request( { method => 'idoit.login' } );
+    delete $self->{session_id};
+    delete $self->{client}; # grab a fresh client next time
+    return $res;
+} # logout()
 
 1; # End of WebService::IdoitAPI
 
@@ -151,6 +180,22 @@ the JSON parameters C<version>, C<id> and C<params.language>
 if they are not provided in C<$request>.
 It takes care to add the credentials,
 that were given in the configuration hash to method C<new()>.
+
+=head2 login
+
+    my $res = $idoitapi->login();
+
+Sends an C<idoit.login> API call to create a session.
+If the call is successful,
+the returned session ID is used henceforth
+instead of username and password;
+
+=head2 logout
+
+    my $res = $idoitapi->logout();
+
+Sends an C<idoit.logout> API call to close a session.
+A previous used session ID is deleted.
 
 =head1 AUTHOR
 
