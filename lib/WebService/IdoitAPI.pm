@@ -6,9 +6,10 @@ use 5.006;
 use strict;
 use warnings;
 
+use Carp;
 use JSON::RPC::Legacy::Client;
 
-our $VERSION = '0.1.0';
+our $VERSION = 'v0.1.1';
 
 my @CONFIG_VARS = qw(apikey password url username);
 
@@ -19,14 +20,15 @@ sub new {
         version => '2.0',
     };
 
+    bless($self, $class);
     if (defined $config) {
         for my $cv (@CONFIG_VARS) {
             if (exists $config->{$cv}) {
                 $self->{config}->{$cv} = $config->{$cv};
             }
         }
+        $self->_test_minimum_config();
     }
-    bless($self, $class);
     return $self;
 } # new()
 
@@ -110,6 +112,14 @@ sub is_logged_in {
     return exists $_[0]->{session_id};
 } # is_logged_in()
 
+sub _test_minimum_config {
+    my $self = shift;
+    croak "configuration is missing the API key"
+        unless ( $self->{config}->{apikey} );
+    croak "configuration is missing the URL for the API"
+        unless ( $self->{config}->{url} );
+} # _test_minimum_config()
+
 1; # End of WebService::IdoitAPI
 
 __DATA__
@@ -120,7 +130,7 @@ WebService::IdoitAPI - a library to access the i-doit JSON RPC API
 
 =head1 VERSION
 
-Version 0.1.0
+Version v0.1.1
 
 =head1 SYNOPSIS
 
@@ -164,6 +174,9 @@ and provide it with the credentials and location to access the JSON-RPC-API.
 Depending on the configuration of your i-doit instance,
 you may need a username and password and an API key,
 or the key may suffice.
+
+This function throws an exception
+when either C<< $config->{apikey} >> or C<< $config->{url} >> is missing.
 
 =head2 request
 

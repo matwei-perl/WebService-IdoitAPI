@@ -10,6 +10,10 @@ my %WriteMakefileArgs = (
     ABSTRACT_FROM    => 'lib/WebService/IdoitAPI.pm',
     LICENSE          => 'artistic_2',
     MIN_PERL_VERSION => '5.006',
+    BUILD_REQUIRES => {
+        'Test::More' => '0',
+	'Test::Exception' => '0',
+    },
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => '0',
     },
@@ -17,8 +21,8 @@ my %WriteMakefileArgs = (
         'Test::More' => '0',
     },
     PREREQ_PM => {
-        #'ABC'              => '1.6',
-        #'Foo::Bar::Module' => '5.0401',
+	'Carp' => 0,
+	'JSON::RPC::Legacy::Client' => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'WebService-IdoitAPI-*' },

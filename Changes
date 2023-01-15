@@ -1,9 +1,10 @@
 Revision history for WebService-IdoitAPI
 
+v0.1.1 Sun Jan 15 19:46:11 CET 2023
+	- throw an exeption when configuration misses either apikey or url
+	- add tests
+
 0.1.0	Fri, 07 Oct 2022 08:42:12 +0200
 	- add WebService::IdoitAPI->new()
 	- add method request()
-
-0.01    Mon Oct 3 18:06:27 2022 +0200
-        First version, released on an unsuspecting world.
 
