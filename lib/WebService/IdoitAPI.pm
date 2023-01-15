@@ -116,7 +116,7 @@ __DATA__
 
 =head1 NAME
 
-WebService::IdoitAPI - The great new WebService::IdoitAPI!
+WebService::IdoitAPI - a library to access the i-doit JSON RPC API
 
 =head1 VERSION
 
@@ -227,7 +227,7 @@ Sends an C<idoit.logout> API call to close a session.
 A previous used session ID is deleted.
 
 If the C<$idoitapi> object is logged in
-when it is destroyed - for instace because it goes out of scope -
+when it is destroyed - for instance because it goes out of scope -
 this method is automatically called
 to close the session on the server.
 
