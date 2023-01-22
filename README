@@ -1,15 +1,20 @@
 WebService-IdoitAPI
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+This module was inspired by the Python i-doit API client from Martin Vorlaender.
+It is used mainly to import data into i-doit using Perl scripts,
+that scrape data from various sources.
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
+If you want to know more about i-doit, please visit
+    https://www.i-doit.com/.
+
+To get more information about the i-doit JSON RPC API, please visit
+     https://kb.i-doit.com/pages/viewpage.action?pageId=37355644
+
+and have a look at the API client written in PHP
+     https://github.com/i-doit/api-client-php
+
+For further question regarding i-doit and the JSON RPC API please visit
+    https://community.i-doit.com/
 
 
 INSTALLATION
@@ -32,6 +37,9 @@ You can also look for information at:
 
     RT, CPAN's request tracker (report bugs here)
         https://rt.cpan.org/NoAuth/Bugs.html?Dist=WebService-IdoitAPI
+
+    GitHub Issues for this module
+        https://github.com/matwei-perl/WebService-IdoitAPI/issues
 
     CPAN Ratings
         https://cpanratings.perl.org/d/WebService-IdoitAPI
