@@ -1,6 +1,11 @@
 WebService-IdoitAPI
 
-This module was inspired by the Python i-doit API client from Martin Vorlaender.
+This module was inspired by the Python i-doit API client from Martin Vorlaender
+    https://github.com/mvorl/i-doit_API
+
+and the PHP i-doit CLI tool from Benjamin Heisig.
+    https://github.com/bheisig/i-doit-cli
+
 It is used mainly to import data into i-doit using Perl scripts,
 that scrape data from various sources.
 
