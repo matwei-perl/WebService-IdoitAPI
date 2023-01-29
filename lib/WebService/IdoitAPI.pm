@@ -70,7 +70,20 @@ sub request {
         $request->{params}->{language} = 'en'
             unless (defined $request->{params}->{language});
         $request->{params}->{apikey} = $self->{config}->{apikey};
-        my $res = $client->call($self->{config}->{url},$request);
+
+        my $res = do {
+            local $@;
+            my $ret;
+            eval { $ret = $client->call($self->{config}->{url},$request); 1};
+            if ( $@ ) {
+                my $status_line = $self->{client}->{status_line};
+                if ( $status_line !~ /^2[0-9]{2} / ) {
+                    die "Connection problem: $status_line";
+                }
+                die "JSON RPC client failed: $@";
+            }
+            $ret;
+        };
         return $res;
     }
     return undef;
