@@ -10,6 +10,10 @@ use Socket;
 use Test::More;
 use Test::Exception;
 
+if ('MSWin32' eq $^O) { # man perlport
+    plan skip_all => qq(Test is not usable on $^O);
+}
+
 use WebService::IdoitAPI;
 
 $SIG{CHLD} = 'IGNORE';
