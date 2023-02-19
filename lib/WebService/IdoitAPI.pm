@@ -9,7 +9,7 @@ use warnings;
 use Carp;
 use JSON::RPC::Legacy::Client;
 
-our $VERSION = 'v0.1.2';
+our $VERSION = 'v0.1.3';
 
 my @CONFIG_VARS = qw(apikey password url username);
 
@@ -143,7 +143,7 @@ WebService::IdoitAPI - a library to access the i-doit JSON RPC API
 
 =head1 VERSION
 
-Version v0.1.2
+Version v0.1.3
 
 =head1 SYNOPSIS
 

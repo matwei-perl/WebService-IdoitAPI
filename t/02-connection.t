@@ -13,6 +13,9 @@ use Test::Exception;
 if ('MSWin32' eq $^O) { # man perlport
     plan skip_all => qq(Test is not usable on $^O);
 }
+elsif ($] < 5.014) {
+    plan skip_all => qq(Test doesn't work with perl version prior 5.14);
+}
 
 use WebService::IdoitAPI;
 
