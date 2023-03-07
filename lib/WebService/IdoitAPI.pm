@@ -125,6 +125,33 @@ sub is_logged_in {
     return exists $_[0]->{session_id};
 } # is_logged_in()
 
+sub _read_config_fh {
+    my $fh = shift;
+
+    my $config = {};
+    my %valid = map { $_ => 1 } qw(
+        apikey key password url username
+    );
+
+    while (<$fh>) {
+        if ( /^\s*(\S[^:=]+)[:=]\s*(\S.+)$/ ) {
+            my ($key, $val) = ($1, $2);
+            for ($key, $val) {
+                s/\s+$//;
+                s/[,;]$//;
+                s/^"(.*)"$/$1/;
+                s/^'(.*)'$/$1/;
+            }
+            next unless ( $valid{$key} );
+            $config->{$key} = $val;
+        }
+    }
+
+    $config->{apikey} = $config->{key} unless ( exists $config->{apikey} );
+
+    return $config;
+} # _read_config_fh()
+
 sub _test_minimum_config {
     my $self = shift;
     croak "configuration is missing the API key"
