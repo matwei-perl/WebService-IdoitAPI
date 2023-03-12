@@ -3,6 +3,7 @@ blib$
 .git/
 .git$
 .gitignore$
+.idoitcli.json
 Makefile$
 MANIFEST\.
 MYMETA\.

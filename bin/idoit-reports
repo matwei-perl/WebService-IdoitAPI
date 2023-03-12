@@ -1,0 +1,178 @@
+#!/usr/bin/env perl
+# vim: set sw=4 ts=4 et ai si:
+#
+use strict;
+use warnings;
+
+use Getopt::Long;
+use Pod::Usage;
+use WebService::IdoitAPI;
+
+use version; our $VERSION = qv('v0.1.3');
+
+sub get_reports {
+    my $config = shift;
+
+    my $idoitapi = WebService::IdoitAPI->new( $config );
+
+    my $request = { method => 'cmdb.reports.read' };
+    if (scalar @ARGV ) {
+        $request->{params}->{id} = $ARGV[0];
+    }
+    my $response = $idoitapi->request( $request );
+
+    print "$idoitapi->{client}->status_line\n"  unless ( $response );
+
+    return $response;
+} # get_reports()
+
+sub initialize {
+    my $config = {};
+    my %opt = ();
+    my @opt_def = qw(
+        config=s
+        help|?
+        man
+        version
+    );
+    GetOptions(\%opt, @opt_def);
+
+    pod2usage(-exitstatus => 0, -input => \*DATA)
+        if $opt{help};
+    pod2usage(-exitstatus => 0, -input => \*DATA, -verbose => 2)
+        if $opt{man};
+    pod2usage(-exitstatus => 0, -input => \*DATA, -verbose => 99, -sections => 'VERSION')
+        if $opt{version};
+
+    if ( $opt{config} ) {
+        open(my $fh, '<', $opt{config})
+            or die "Can't read config file '$opt{config}': $!";
+        $config = WebService::IdoitAPI::_read_config_fh($fh);
+        close($fh);
+    }
+    else {
+        die "Please provide a configuration file with option '--config'";
+    }
+
+    return $config;
+} # initialize()
+
+sub print_aoh {
+    my $aoh = shift;
+    print "---------------\n";
+    for my $record (@$aoh) {
+        for my $key (sort keys %$record) {
+            print "$key: $record->{$key}\n";
+        }
+        print "---------------\n";
+    }
+} # print_aoh()
+
+my $config = initialize();
+
+my $res = get_reports( $config );
+
+if ($res) {
+    if ($res->is_success) {
+        print_aoh($res->{content}->{result});
+    }
+    else {
+        my $error = $res->{content}->{error};
+        my ($ec, $em) = ($error->{code}, $error->{message});
+        print "Error : $ec: $em\n";
+        exit 1;
+    }
+}
+
+exit 0;
+
+__END__
+
+=head1 NAME
+
+idoit-reports - get i-doit reports
+
+=head1 VERSION
+
+This is version v0.1.3
+
+=head1 SYNOPSIS
+
+  idoit-reports [ options ] [ report-number ]
+
+  options:
+    --config path   - read configuration from file at given path
+    --help          - show a short help text and exit
+    --man           - show the full man page and exit
+    --version       - show the version and exit
+
+=head1 OPTIONS AND ARGUMENTS
+
+=head2 Options
+
+=head3 --config path
+
+Read configuration values from a file found at the given path.
+
+This file should contain lines a key and a value
+separated by equal sign (I<=>) or colon (I<:>).
+The key and the value may be enclosed
+in single (I<'>) or double (I<">) quotation marks.
+Leading and trailing white space is removed
+as well as a comma (I<,>) at the the end of the line.
+
+The program needs the following keys in the file:
+
+=over 4
+
+=item key
+
+The API key for i-doit.
+
+=item url
+
+The URL of the i-doit instance.
+
+=item username
+
+The username for the login (optional).
+
+=item password
+
+The password for the login (optional).
+
+=back
+
+=head3 --help / -?
+
+The program shows a short help text and exits.
+
+=head3 --man
+
+The program shows this man page and exits.
+
+=head3 --version
+
+The program shows its version and exits.
+
+=head2 Arguments
+
+The program accepts one argument, the number of the report to get.
+
+If this argument is omitted,
+the program gets the list of all available reports.
+
+=head1 AUTHOR
+
+Mathias Weidner C<< mamawe@cpan.org >>
+
+=head1 LICENCE AND COPYRIGHT
+
+Copyright (c) 2023, Mathias Weidner C<< mamawe@cpan.org >>.
+All rights reserved.
+
+This software is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself. See L<perlartistic>.
+
+=cut
+
