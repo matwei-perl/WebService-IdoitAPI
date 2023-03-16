@@ -46,16 +46,7 @@ sub initialize {
     pod2usage(-exitstatus => 0, -input => \*DATA, -verbose => 99, -sections => 'VERSION')
         if $opt{version};
 
-    if ( $opt{config} ) {
-        open(my $fh, '<', $opt{config})
-            or die "Can't read config file '$opt{config}': $!";
-        $config = WebService::IdoitAPI::_read_config_fh($fh);
-        close($fh);
-    }
-    else {
-        die "Please provide a configuration file with option '--config'";
-    }
-    $config->{opt} = \%opt;
+    $config = WebService::IdoitAPI::read_config($opt{config});
 
     return $config;
 } # initialize()
