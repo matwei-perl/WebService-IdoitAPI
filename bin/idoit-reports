@@ -32,7 +32,9 @@ sub initialize {
     my @opt_def = qw(
         config=s
         help|?
+        json
         man
+        pretty
         version
     );
     GetOptions(\%opt, @opt_def);
@@ -53,12 +55,35 @@ sub initialize {
     else {
         die "Please provide a configuration file with option '--config'";
     }
+    $config->{opt} = \%opt;
 
     return $config;
 } # initialize()
 
 sub print_aoh {
-    my $aoh = shift;
+    my ($config,$aoh) = @_;
+    if ( $config->{opt}->{json} ) {
+        print_aoh_json($config, $aoh);
+    }
+    else {
+        print_aoh_text($config, $aoh);
+    }
+} # print_aoh()
+
+sub print_aoh_json {
+    my ($config,$aoh) = @_;
+    my $json = JSON->new();
+
+    if ( $config->{opt}->{pretty} ) {
+        print $json->pretty->encode($aoh);
+    }
+    else {
+        print $json->encode($aoh);
+    }
+} # print_aoh_json()
+
+sub print_aoh_text {
+    my ($config,$aoh) = @_;
     print "---------------\n";
     for my $record (@$aoh) {
         for my $key (sort keys %$record) {
@@ -66,7 +91,7 @@ sub print_aoh {
         }
         print "---------------\n";
     }
-} # print_aoh()
+} # print_aoh_text()
 
 my $config = initialize();
 
@@ -74,7 +99,7 @@ my $res = get_reports( $config );
 
 if ($res) {
     if ($res->is_success) {
-        print_aoh($res->{content}->{result});
+        print_aoh($config, $res->{content}->{result});
     }
     else {
         my $error = $res->{content}->{error};
@@ -150,6 +175,15 @@ The program shows a short help text and exits.
 =head3 --man
 
 The program shows this man page and exits.
+
+=head3 --json
+
+The report is printed as JSON.
+
+=head3 --pretty
+
+Given together with option C<< --json >>,
+the output is printed as readable formatted JSON.
 
 =head3 --version
 
