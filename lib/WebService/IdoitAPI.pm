@@ -38,7 +38,7 @@ sub DESTROY {
     if ($self->is_logged_in()) {
         $self->logout();
     }
-    return undef;
+    return;
 } # DESTROY()
 
 sub request {
@@ -86,7 +86,7 @@ sub request {
         };
         return $res;
     }
-    return undef;
+    return;
 } # request()
 
 sub login {
@@ -109,7 +109,7 @@ sub login {
         $self->{session_id} = $res->{content}->{result}->{'session-id'};
         return $res;
     }
-    return undef;
+    return;
 } # login()
 
 sub logout {
