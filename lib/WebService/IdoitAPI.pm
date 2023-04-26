@@ -175,6 +175,9 @@ sub _read_config_fh {
     }
 
     $config->{apikey} = $config->{key} unless ( exists $config->{apikey} );
+    unless ( $config->{url} =~ m|/src/jsonrpc[.]php$| ) {
+        $config->{url} =~ s#/?$#/src/jsonrpc.php#;
+    }
 
     return $config;
 } # _read_config_fh()
