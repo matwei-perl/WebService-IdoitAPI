@@ -9,7 +9,7 @@ use warnings;
 use Carp;
 use JSON::RPC::Legacy::Client;
 
-our $VERSION = 'v0.2.0';
+our $VERSION = 'v0.2.1';
 
 my @CONFIG_VARS = qw(apikey password url username);
 
@@ -200,7 +200,7 @@ WebService::IdoitAPI - a library to access the i-doit JSON RPC API
 
 =head1 VERSION
 
-Version v0.2.0
+Version v0.2.1
 
 =head1 SYNOPSIS
 
@@ -370,10 +370,6 @@ You can also look for information at:
 =item * RT: CPAN's request tracker (report bugs here)
 
 L<https://rt.cpan.org/NoAuth/Bugs.html?Dist=WebService-IdoitAPI>
-
-=item * CPAN Ratings
-
-L<https://cpanratings.perl.org/d/WebService-IdoitAPI>
 
 =item * Search CPAN
 
