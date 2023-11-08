@@ -9,7 +9,7 @@ use Pod::Usage;
 use Text::CSV qw(csv);
 use WebService::IdoitAPI;
 
-use version; our $VERSION = qv('v0.2.2');
+use version; our $VERSION = qv('v0.3.0');
 
 sub get_manufacturers {
     my $api = shift;
@@ -140,7 +140,7 @@ idoit-manufacturers - get i-doit manufacturers
 
 =head1 VERSION
 
-This is version v0.2.2
+This is version v0.3.0
 
 =head1 SYNOPSIS
 

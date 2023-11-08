@@ -1,6 +1,8 @@
+bin/idoit-object
 bin/idoit-reports
 Changes
 lib/WebService/IdoitAPI.pm
+lib/WebService/IdoitAPI/Object.pm
 Makefile.PL
 MANIFEST
 README
@@ -8,6 +10,7 @@ t/00-load.t
 t/01-new.t
 t/02-connection.t
 t/03-config.t
+xt/demo.ini
 xt/manifest.t
 xt/pod-coverage.t
 xt/pod.t
