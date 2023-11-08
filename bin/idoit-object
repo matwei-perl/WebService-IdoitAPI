@@ -1,0 +1,126 @@
+#!/usr/bin/env perl
+# vim: set sw=4 ts=4 et ai si:
+#
+use strict;
+use warnings;
+
+use Data::Dumper;
+use Getopt::Long;
+use Pod::Usage;
+use WebService::IdoitAPI::Object;
+
+sub initialize {
+    my $config = {};
+    my $opt = {};
+    GetOptions($opt, qw(
+        config=s
+        get-information|information=i
+        pretty
+        help man
+    ));
+    pod2usage(-exitstatus => 0, -input => \*DATA)                if $opt->{help};
+    pod2usage(-exitstatus => 0, -verbose => 2, -input => \*DATA) if $opt->{man};
+
+    $config = WebService::IdoitAPI::read_config($opt->{config});
+
+    $config->{opt} = $opt;
+
+    return $config;
+} # initialize()
+
+my $config = initialize();
+my $api = WebService::IdoitAPI->new($config);
+my $opt = $config->{opt};
+my $object = WebService::IdoitAPI::Object->new($api,$opt->{id});
+
+if (my $id = $opt->{'get-information'}) {
+    my $info = $object->get_information($id);
+    my $json = JSON->new();
+    if ( $config->{opt}->{pretty} ) {
+        print $json->canonical->pretty->encode($info);
+    }
+    else {
+        print $json->encode($info);
+    }
+
+}
+
+exit 0;
+
+__END__
+
+=encoding utf8
+
+=head1 NAME
+
+idoit-object - handle objects in i-doit
+
+=head1 VERSION
+
+This man page describes version v0.2.2 of the program.
+
+=head1 SYNOPSIS
+
+  idoit-object [ options ]
+
+=head1 OPTIONS
+
+=head2 --help
+
+Show a short description and exit.
+
+=head2 --man
+
+Show the full man page and exit.
+
+=head2 --config path
+
+Read configuration values from a file found at the given path.
+
+=head3 --get-information id | --information id
+
+Print all information for the object with ID I<id> from i-doit as JSON.
+
+=head3 --pretty
+
+Pretty print JSON output.
+
+=head3 --version
+
+Show the version and exit.
+
+=head1 CONFIGURATION FILE FORMAT
+
+The configuration file should contain lines with a key and a value
+separated by equal sign (I<=>) or colon (I<:>).
+The key and the value may be enclosed
+in single (I<'>) or double (I<">) quotation marks.
+Leading and trailing white space is removed
+as well as a comma (I<,>) at the the end of the line.
+
+The program needs the following keys in the file:
+
+=over 4
+
+=item key
+
+The API key for i-doit.
+
+=item url
+
+The URL of the i-doit instance.
+
+=item username
+
+The username for the login (optional).
+
+=item password
+
+The password for the login (optional).
+
+=back
+
+=head1 AUTHOR
+
+Mathias Weidner C<< <mamawe@cpan.org> >>
+
