@@ -16,10 +16,11 @@ sub initialize {
         config=s
         get-information|information=i
         pretty
-        help man
+        help|h|? man
     ));
-    pod2usage(-exitstatus => 0, -input => \*DATA)                if $opt->{help};
-    pod2usage(-exitstatus => 0, -verbose => 2, -input => \*DATA) if $opt->{man};
+    pod2usage(-exitstatus => 0, -input => \*DATA)       if $opt->{help};
+    pod2usage(-exitstatus => 0, -input => \*DATA,
+              -verbose => 2)                            if $opt->{man};
 
     $config = WebService::IdoitAPI::read_config($opt->{config});
 
@@ -57,7 +58,7 @@ idoit-object - handle objects in i-doit
 
 =head1 VERSION
 
-This man page describes version v0.3.0 of the program.
+This is version v0.3.0 of the program.
 
 =head1 SYNOPSIS
 
@@ -65,7 +66,7 @@ This man page describes version v0.3.0 of the program.
 
 =head1 OPTIONS
 
-=head2 --help
+=head2 --help | -h | -?
 
 Show a short description and exit.
 
