@@ -16,11 +16,13 @@ sub initialize {
         config=s
         get-information|information=i
         pretty
-        help|h|? man
+        help|h|? man version|V
     ));
     pod2usage(-exitstatus => 0, -input => \*DATA)       if $opt->{help};
     pod2usage(-exitstatus => 0, -input => \*DATA,
               -verbose => 2)                            if $opt->{man};
+    pod2usage(-exitstatus => 0, -input => \*DATA,
+              -verbose => 99, -sections => 'VERSION')   if $opt->{version};
 
     $config = WebService::IdoitAPI::read_config($opt->{config});
 
@@ -86,7 +88,7 @@ Print all information for the object with ID I<id> from i-doit as JSON.
 
 Pretty print JSON output.
 
-=head3 --version
+=head3 --version | -V
 
 Show the version and exit.
 
