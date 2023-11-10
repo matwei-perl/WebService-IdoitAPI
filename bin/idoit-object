@@ -15,6 +15,7 @@ sub initialize {
     GetOptions($opt, qw(
         config=s
         get-information|information=i
+        get-data|data=i
         pretty
         help|h|? man version|V
     ));
@@ -31,21 +32,33 @@ sub initialize {
     return $config;
 } # initialize()
 
-my $config = initialize();
-my $api = WebService::IdoitAPI->new($config);
-my $opt = $config->{opt};
-my $object = WebService::IdoitAPI::Object->new($api,$opt->{id});
+sub print_json {
+    my ($opt,$data) = @_;
 
-if (my $id = $opt->{'get-information'}) {
-    my $info = $object->get_information($id);
     my $json = JSON->new();
-    if ( $config->{opt}->{pretty} ) {
-        print $json->canonical->pretty->encode($info);
+
+    if ( $opt->{pretty} ) {
+        print $json->canonical->pretty->encode($data);
     }
     else {
-        print $json->encode($info);
+        print $json->encode($data);
     }
+} # print_json()
 
+my ($api,$config,$object,$opt);
+
+$config = initialize();
+$api = WebService::IdoitAPI->new($config);
+$opt = $config->{opt};
+$object = WebService::IdoitAPI::Object->new($api,$opt->{id});
+
+if (my $id = $opt->{'get-information'}) {
+    my $data = $object->get_information($id);
+    print_json($opt, $data);
+}
+elsif ($id = $opt->{'get-data'}) {
+    my $data = $object->get_data($id);
+    print_json($opt, $data);
 }
 
 exit 0;
@@ -80,9 +93,13 @@ Show the full man page and exit.
 
 Read configuration values from a file found at the given path.
 
+=head3 --get-data id | --data id
+
+Print a subset of the information for object with ID I<id> as JSON.
+
 =head3 --get-information id | --information id
 
-Print all information for the object with ID I<id> from i-doit as JSON.
+Print all information for the object with ID I<id> as JSON.
 
 =head3 --pretty
 

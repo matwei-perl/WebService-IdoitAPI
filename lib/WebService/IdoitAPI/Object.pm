@@ -20,6 +20,58 @@ sub new {
     return $self;
 } # new()
 
+sub get_data {
+    my ($self,$id) = @_;
+
+    my ($data,$obj_data);
+
+    $obj_data = $self->get_information($id);
+    $data = {
+        obj => $obj_data->{obj},
+    };
+    for my $c (qw{ catg cats }) {
+        my $hc = $obj_data->{$c};
+        $data->{$c} = {};
+        for my $cc (keys %$hc) {
+            next if ('C__CATG__LOGBOOK' eq $cc);
+            my @acc = ();
+            for my $accr (@{$hc->{$cc}}) {
+                my $record = {};
+                for my $accrk (keys %$accr) {
+                    my $type = ref($accr->{$accrk});
+                    if ('' eq $type) {
+                        if ($accr->{$accrk}) {
+                            $record->{$accrk} = $accr->{$accrk};
+                        }
+                    }
+                    elsif ('HASH' eq $type) {
+                        if (exists $accr->{$accrk}->{title}) {
+                            $record->{$accrk} = $accr->{$accrk}->{title};
+                        }
+                        else {
+                            $record->{$accrk} = $accr->{$accrk};
+                        }
+                    }
+                    elsif ('ARRAY' eq $type) {
+                        if (0 < scalar @{$accr->{$accrk}}) {
+                            $record->{$accrk} = $accr->{$accrk};
+                        }
+                    }
+                    else {
+                        warn "get_data(): can't handle type '$type'";
+                    }
+                    next;
+                }
+                push(@acc, $record);
+            }
+            if (0 < scalar @acc) {
+                $data->{$c}->{$cc} = \@acc;
+            }
+        }
+    }
+    return $data;
+} # get_data();
+
 sub get_information {
     my ($self, $id) = @_;
     my ($api,$info,$obj,$res,$tcat);
@@ -137,6 +189,27 @@ and optionally with an object ID.
 
 The API object should be configured and ready to use.
 
+=head2 get_data
+
+    $data = $object->get_data();
+
+or
+
+    $data = $object->get_data($id);
+
+This function returns a subset of the data retrieved by C<get_information()>
+in a form that is more suitable to be copied to other objects.
+
+The basic data structure returned by this function
+is the same as by C<get_information()>.
+
+Data from C<C__CATG__LOGBOOK> is left out
+and the attributes in the other categories are changed
+to values that can be used with the JSON-RPC-API call C<cmdb.category.save>.
+
+One use case for this function
+is to amend an object with data from a template.
+
 =head2 get_information
 
     $info = $object->get_information();
@@ -145,7 +218,7 @@ or
 
     $info = $object->get_information($id);
 
-This functions collects all information about an object from i-doit
+This function collects all information about an object from i-doit
 and returns it in a hash with the following structure:
 
     $info = {
@@ -206,7 +279,6 @@ No bugs have been reported.
 Please report any bugs or feature requests to
 C<bug-app-new@rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org>.
-
 
 =head1 AUTHOR
 
