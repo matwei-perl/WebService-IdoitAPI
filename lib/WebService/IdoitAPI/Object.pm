@@ -8,7 +8,7 @@ use Carp;
 
 use WebService::IdoitAPI;
 
-use version; our $VERSION = qv('v0.3.1');
+# VERSION
 
 sub new {
     my ($class, $api, $id) = @_;
@@ -157,12 +157,6 @@ __END__
 =head1 NAME
 
 WebService::IdoitAPI::Object - handle i-doit objects
-
-
-=head1 VERSION
-
-This document describes WebService::IdoitAPI::Object version v0.3.1
-
 
 =head1 SYNOPSIS
 
