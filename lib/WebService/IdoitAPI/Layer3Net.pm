@@ -8,17 +8,6 @@ use WebService::IdoitAPI;
 
 # VERSION
 
-sub new {
-    my ($class, $api) = @_;
-    my $self = {
-        api => $api,
-    };
-    
-    bless $self, $class;
-
-    return $self;
-} # new()
-
 sub create {
     my ($api, $fields) = @_;
     my ($address,$cidr_suffix) = split "/", $fields->{network};
@@ -57,7 +46,7 @@ sub create {
                 category => "C__CATS__NET",
                 data => {
                     address => $address,
-                    cidr_suffix => $cidr_suffix,
+                    cidr_suffix => int($cidr_suffix),
                 },
             },
         });
@@ -109,30 +98,26 @@ WebService::IdoitAPI::Layer3Net - handle layer 3 networks
 
 =head1 SYNOPSIS
 
-    use WebService::IdoitAPI::Layer3Net;
+  use WebService::IdoitAPI::Layer3Net;
 
-    my $api = WebService::IdoitAPI->new( $config );
-    my $l3n = WebService::IdoitAPI::Layer3Net->new( $api );
+  my $api = WebService::IdoitAPI->new( $config );
 
-    my $nets = WebService::IdoitAPI::Layer3Net::list( $api );
+  my $fields = {
+    network = "$addr_with_or_without_suffix",
+    title = $title,
+    description = $description,
+  };
+  my $id = WebService::IdoitAPI::Layer3Net::create( $api, $fields );
 
-    for my $net ( @$nets ) {
-        # do something with $net
-    }
+  my $nets = WebService::IdoitAPI::Layer3Net::list( $api );
+
+  for my $net ( @$nets ) {
+    # do something with $net
+  }
 
 =head1 DESCRIPTION
 
 =head1 INTERFACE 
-
-=head2 Methods
-
-=head3 new( $api )
-
-    my $api = WebService::IdoitAPI->new( $config );
-    my $l3n = WebService::IdoitAPI::Layer3Net->new( $api );
-
-The constructor takes a fully configured C<WebService::IdoitAPI> object
-which is used to perform all necessary API calls.
 
 =head2 Functions
 

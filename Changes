@@ -1,7 +1,7 @@
 Revision history for WebService-IdoitAPI
 
 {{$NEXT}}
-	- feat: WebService::IdoitAPI::Layer3Net handles layer 3 networks
+	- add WebService::IdoitAPI::Layer3Net handles layer 3 networks
 	- add script idoit-layer3-net to access Layer3Net
 
 v0.3.1 Fri Nov 10 20:10:14 CET 2023

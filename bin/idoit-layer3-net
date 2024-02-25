@@ -14,7 +14,15 @@ use WebService::IdoitAPI::Layer3Net;
 sub import_csv {
     my ($config,$known_l3n) = @_;
     my $api = $config->{api};
-    warn("import-csv not imported yet");
+    my $rows = read_csv($config->{opt}->{import_csv});
+    for my $row (@$rows) {
+        next    if (exists $known_l3n->{$row->{network}});
+
+        my $id = WebService::IdoitAPI::Layer3Net::create( $api, $row );
+        if ($id) {
+            $known_l3n->{$row->{network}} = $id;
+        }
+    }
 } # import_csv()
 
 sub initialize {
@@ -104,6 +112,23 @@ sub print_aoh_text {
     }
 } # print_aoh_text()
 
+sub read_csv {
+    my ($fname) = @_;
+    my ($csv,$fh,@headers,$rows);
+
+    $csv = Text::CSV->new ({ binary => 1, auto_diag => 1 });
+
+    open($fh, "<:encoding(utf8)", $fname)
+        or die "read_csv() can't open '$fname' $!";
+    @headers = $csv->header($fh);
+    while (my $row = $csv->getline_hr ($fh)) {
+        push(@$rows, $row);
+        next;
+    }
+    close($fh);
+    return $rows;
+} # read_csv()
+
 my $config = initialize();
 
 my $l3_nets = WebService::IdoitAPI::Layer3Net::list( $config->{api} );
@@ -166,6 +191,10 @@ The report is printed as JSON.
 Given together with option C<< --json >>,
 the output is printed as readable formatted JSON.
 
+=head3 --import-csv filename
+
+Import layer3 networks from the named CSV file.
+
 =head3 --version
 
 The program shows its version and exits.
@@ -200,6 +229,42 @@ The username for the login (optional).
 The password for the login (optional).
 
 =back
+
+=head1 CSV FILE
+
+The CSV file for the import of networks should have the following columns:
+
+=over 4
+
+=item network
+
+The network to be imported,
+optionally followed by a slash and the number of netmask bits.
+
+If the slash and the bits is missing,
+the network is considered a single address.
+
+=item title
+
+The title of the network.
+
+If this field or column is missing,
+the network is used in CIDR notation.
+
+=item description
+
+The description for the network.
+
+If this field or column is missing,
+the description will be empty.
+
+=back
+
+The script will only import networks into i-doit
+that were not previously known.
+
+If the same network appears multiple times in the CSV file,
+only the first record will be imported.
 
 =head1 AUTHOR
 
