@@ -76,15 +76,11 @@ sub get_information {
     my ($self, $id) = @_;
     my ($api,$info,$obj,$res,$tcat);
     $api = $self->{api};
-    if (exists $self->{info} and
-        (not defined $id or
-         $self->{id} == $id)) {
 
-        $info = $self->{info};
-    }
-    else {
+    my $get_it = sub {
+        my ($wanted_id) = @_;
         $info = {};
-        $res = _cmdb_object_read($api,$id);
+        $res = _cmdb_object_read($api,$wanted_id);
         # TODO: check for errors
         $obj = $res->{content}->{result};
         $info->{obj} = $obj;
@@ -110,13 +106,23 @@ sub get_information {
                 }
             }
         }
-        if (exists $self->{id}) {
-            $self->{info} = $info;
-        }
-        else {
-            $self->{info} = $info;
-            $self->{id} = $id;
-        }
+        $self->{id} = $wanted_id;
+        $self->{info} = $info;
+    };
+
+    if (defined $self->{info}
+            and (not defined $id
+                or $self->{id} == $id)) {
+        $info = $self->{info};
+    }
+    elsif (defined $id) {
+        $info = $get_it->($id);
+    }
+    elsif (defined $self->{id}) {
+        $info = $get_it->($self->{id});
+    }
+    else {
+        die "get_information() called without ID on an object without ID";
     }
     return $info;
 } # get_information()
@@ -242,16 +248,22 @@ which is accessible at C<< $info->{'obj'}->{'objtype'} >>
 When this function is called with a value for C<$id>,
 it returns the information for the object with that ID.
 
-Is the function is called without C<$id>,
+If the function is called without C<$id>,
 the ID that was used when creating the object with C<new()> is used.
 
-If the option C<$id> is provided and is equal to the ID assigned
-to the object when created with C<new()>,
-the retrieved information is cached with the object.
-Further calls with the same ID or without C<$id> get the cached information.
+If the object has no internal ID and no ID is provided,
+the method throws an error.
+
+The last retrieved information is cached with the object
+and the internal ID set to the last used object ID.
+
+If the option C<$id> is provided
+and is equal to the internal ID of the object
+the retrieved information is taken from the cache.
 
 If the option C<$id> is provided and differs from the internal ID
-of the object, the information is always retrieved from i-doit.
+of the object, the information is retrieved from i-doit,
+cached, and the new ID is set.
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
@@ -265,6 +277,22 @@ None.
 =head1 INCOMPATIBILITIES
 
 None reported.
+
+=head1 DIAGNOSTICS
+
+=over 4
+
+=item get_information() called without ID on an object without ID
+
+The method C<get_information()> can use either the ID given in the call
+or the ID that belongs to the object.
+If an object was created without an ID
+and C<get_information()> is called on this object without an ID,
+the method doesn't know which object to inspect.
+
+Either create the object with an ID or call C<get_information()> with an ID.
+
+=back
 
 =head1 BUGS AND LIMITATIONS
 

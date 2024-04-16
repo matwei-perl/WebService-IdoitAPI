@@ -47,7 +47,7 @@ sub print_json {
     }
 } # print_json()
 
-my ($api,$config,$object,$opt);
+my ($api,$config,$data,$object,$opt);
 
 $config = initialize();
 $api = WebService::IdoitAPI->new($config);
@@ -55,11 +55,11 @@ $opt = $config->{opt};
 $object = WebService::IdoitAPI::Object->new($api,$opt->{id});
 
 if (my $id = $opt->{'get-information'}) {
-    my $data = $object->get_information($id);
+    $data = $object->get_information($id);
     print_json($opt, $data);
 }
 elsif ($id = $opt->{'get-data'}) {
-    my $data = $object->get_data($id);
+    $data = $object->get_data($id);
     print_json($opt, $data);
 }
 
