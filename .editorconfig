@@ -12,7 +12,7 @@ charset = utf-8
 indent_style = space
 indent_size = 4
 
-[*.{pl,pm}]
+[*.{pl,pm,t}]
 indent_style = space
 indent_size = 4
 
