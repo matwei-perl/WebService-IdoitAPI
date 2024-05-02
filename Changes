@@ -2,6 +2,10 @@ Revision history for WebService-IdoitAPI
 
 {{$NEXT}}
 
+0.4.1     2024-05-02 11:45:50+02:00 Europe/Berlin
+	- feat: add script idoit-query.pl to send arbitrary queries
+	- style: treat .t files like Perl code
+
 0.4.0     2024-02-25 19:40:24+01:00 Europe/Berlin
 	- add WebService::IdoitAPI::Layer3Net handles layer 3 networks
 	- add script idoit-layer3-net to access Layer3Net
