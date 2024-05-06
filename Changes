@@ -1,6 +1,8 @@
 Revision history for WebService-IdoitAPI
 
 {{$NEXT}}
+	- feat: add script idoit-test-api to test a running API against
+	  the current version of the module
 
 0.4.1     2024-05-02 11:45:50+02:00 Europe/Berlin
 	- feat: add script idoit-query.pl to send arbitrary queries
