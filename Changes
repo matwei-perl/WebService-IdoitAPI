@@ -1,6 +1,8 @@
 Revision history for WebService-IdoitAPI
 
 {{$NEXT}}
+
+0.4.2     2024-05-06 17:53:12+02:00 Europe/Berlin
 	- feat: add script idoit-test-api to test a running API against
 	  the current version of the module
 
