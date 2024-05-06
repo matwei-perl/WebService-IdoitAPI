@@ -9,6 +9,8 @@ use Getopt::Long;
 use Pod::Usage;
 use WebService::IdoitAPI;
 
+use version; # VERSION
+
 sub initialize {
     my $config = {};
     my %opt = ();
