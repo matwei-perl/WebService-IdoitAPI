@@ -48,11 +48,71 @@ sub main {
 
     $config = initialize();
 
+    print_components($config);
     test_cmdb_objects_read($config);
 
     $config->{api}->logout();
 
 } # main()
+
+sub print_components {
+    my ($config) = @_;
+    my ($api,$res);
+
+    $api = $config->{api};
+    $res = $api->request( {
+        method => 'idoit.version',
+    } );
+    if ($res and $res->{is_success}) {
+        my %result = %{$res->{content}->{result}};
+        my ($iv,$is,$it) = @result{qw(version step type)};
+        my $step = $is ? " step: $is," : '';
+        print "i-doit version: $iv,$step type $it\n";
+    }
+    $res = $api->request( {
+        method => 'idoit.license',
+    } );
+    if ($res and $res->{is_success}) {
+        my %result = %{$res->{content}->{result}};
+        for my $license (@{$result{licenses}}) {
+            printf(" %s, %d objects, registered %s - %s\n"
+                  ,$license->{licenseType}
+                  ,$license->{objects}
+                  ,$license->{registrationDate}
+                  ,$license->{validUntil}
+                  );
+            next;
+        }
+        printf(" %d objects in use out of %d\n"
+              ,$result{objectCapacity}->{inUse}
+              ,$result{objectCapacity}->{total}
+              );
+        print " Add ons (licensed)\n";
+        for my $key (sort keys %{$result{addons}}) {
+            my $addon = $result{addons}->{$key};
+            printf("  %s (%s)\n"
+                  ,$addon->{label}
+                  ,$addon->{licensed}
+                  );
+            next;
+        }
+    }
+    $res = $api->request( {
+        method => 'idoit.addons',
+    } );
+    if ($res and $res->{is_success}) {
+        my %result = %{$res->{content}->{result}};
+        print " Add ons installed\n";
+        for my $addon (@{$result{result}}) {
+            printf("  %s (%s) version %s\n"
+                  ,$addon->{title}
+                  ,$addon->{author}->{name}
+                  ,$addon->{version}
+                  );
+            next;
+        }
+    }
+} # print_components()
 
 sub print_finding {
     my ($config,$msg) = @_;
