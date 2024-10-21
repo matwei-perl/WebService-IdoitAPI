@@ -82,6 +82,8 @@ sub list {
             {   id => $_->{id},
                 address => $_->{categories}->{C__CATS__NET}->[0]->{address},
                 cidr_suffix => $_->{categories}->{C__CATS__NET}->[0]->{cidr_suffix},
+                gateway => $_->{categories}->{C__CATS__NET}->[0]->{gateway}->{ref_title} || '',
+                gateway_id => $_->{categories}->{C__CATS__NET}->[0]->{gateway}->{id} || '',
             }
         } @{$res->{content}->{result}};
     }
@@ -157,14 +159,18 @@ Every item in this array has the following structure:
 
   {
     id => $id,
-    network => $address,
+    address => $address,
     cidr_suffix => $suffix,
+    gateway => $gateway_addr,
+    gateway_id => $gw_id,
   }
 
 C<$id> can be used to retrieve details from i-doit
 about the network in question.
 C<$address> is the network address,
 and C<$suffix> is the CIDR suffix of the network.
+C<$gateway> is the address of the gateway or the empty string,
+C<$gateway_id> is the id of the object acting as gateway or the empty string.
 
 =head1 DIAGNOSTICS
 

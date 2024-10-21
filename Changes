@@ -1,6 +1,7 @@
 Revision history for WebService-IdoitAPI
 
 {{$NEXT}}
+	- feat: idoit-layer3 --list prints information about the gateway
 
 0.4.3     2024-05-07 10:42:03+02:00 Europe/Berlin
 	- feat: idoit-test-api print components of i-doit installation
