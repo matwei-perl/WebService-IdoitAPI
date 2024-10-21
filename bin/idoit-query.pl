@@ -88,6 +88,9 @@ sub main {
     if ($data->{is_success}) {
         print_json($config,$data->{content});
     }
+    else {
+        die "i-doit did not return success\n";
+    }
 } # main()
 
 main() if not caller();
