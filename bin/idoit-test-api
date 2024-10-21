@@ -135,9 +135,19 @@ sub test_cmdb_objects_read {
             limit => "1",
         },
     } );
-    return unless ($res);
-    return unless ($res->{is_success});
+    if (not $res) {
+        print_finding($config,"*** cmdb.objects.read: dit not return anything");
+        return;
+    }
+    if (not $res->{is_success}) {
+        print_finding($config,"*** cmdb.objects.read: dit not return success");
+        return;
+    }
     $cres = scalar @{$res->{content}->{result}};
+    if (0 == $cres) {
+        print_finding($config,"*** cmdb.objects.read: with param 'limit' returned an empty list");
+        return;
+    }
     unless (1 == $cres) {
         print_finding($config,"*** cmdb.objects.read: param 'limit' does not work (1 <=> $cres)");
     }
