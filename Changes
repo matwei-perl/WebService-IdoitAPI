@@ -1,6 +1,8 @@
 Revision history for WebService-IdoitAPI
 
 {{$NEXT}}
+	- WebService::IdoitAPI::Layer3Net::list() returns the network
+	  in CIDR notation and the description
 
 0.4.4     2024-10-21 10:16:58+02:00 Europe/Berlin
 	- feat: idoit-layer3 --list prints information about the gateway

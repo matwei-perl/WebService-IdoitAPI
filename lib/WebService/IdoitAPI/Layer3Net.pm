@@ -79,11 +79,16 @@ sub list {
     my @nets = ();
     if ($res->{is_success}) {
         @nets = map {
+            my $address = $_->{categories}->{C__CATS__NET}->[0]->{address};
+            my $cidr_suffix = $_->{categories}->{C__CATS__NET}->[0]->{cidr_suffix};
+            my $network = "$address/$cidr_suffix";
             {   id => $_->{id},
-                address => $_->{categories}->{C__CATS__NET}->[0]->{address},
-                cidr_suffix => $_->{categories}->{C__CATS__NET}->[0]->{cidr_suffix},
+                address => $address,
+                cidr_suffix => $cidr_suffix,
+                description => $_->{categories}->{C__CATG__GLOBAL}->[0]->{description},
                 gateway => $_->{categories}->{C__CATS__NET}->[0]->{gateway}->{ref_title} || '',
                 gateway_id => $_->{categories}->{C__CATS__NET}->[0]->{gateway}->{id} || '',
+                network => $network,
             }
         } @{$res->{content}->{result}};
     }
@@ -163,6 +168,7 @@ Every item in this array has the following structure:
     cidr_suffix => $suffix,
     gateway => $gateway_addr,
     gateway_id => $gw_id,
+    network => $network,
   }
 
 C<$id> can be used to retrieve details from i-doit
@@ -171,6 +177,8 @@ C<$address> is the network address,
 and C<$suffix> is the CIDR suffix of the network.
 C<$gateway> is the address of the gateway or the empty string,
 C<$gateway_id> is the id of the object acting as gateway or the empty string.
+C<$network> is the network in CIDR notation,
+that is C<$address> followed by "/" followed by C<$cidr_suffix>.
 
 =head1 DIAGNOSTICS
 
