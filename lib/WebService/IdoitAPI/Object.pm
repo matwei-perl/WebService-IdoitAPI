@@ -20,6 +20,27 @@ sub new {
     return $self;
 } # new()
 
+sub get_addresses {
+    my ($self,$id) = @_;
+    my $addresses = {};
+
+    my $obj_data = $self->get_information($id);
+
+    for my $ha (@{$obj_data->{catg}->{C__CATG__IP}}) {
+        my $addr = $ha->{hostaddress}->{ref_title};
+        $addresses->{$addr} = {
+            active => $ha->{active}->{value},
+            net_id => $ha->{net}->{id},
+            primary => $ha->{active}->{value},
+            type => $ha->{net_type}->{title},
+            type_const => $ha->{net_type}->{const},
+            standard_gateway => $ha->{use_standard_gateway}->{value},
+        };
+        next;
+    }
+    return $addresses;
+} # get_addresses()
+
 sub get_data {
     my ($self,$id) = @_;
 
@@ -188,6 +209,32 @@ that is used for communication with i-doit
 and optionally with an object ID.
 
 The API object should be configured and ready to use.
+
+=head2 get_addresses
+
+    $addresses = $object->get_addresses();
+
+or
+
+    $addresses = $object->get_addresses($id);
+
+This function returns all host addresses of the object
+from the data retrieved by C<get_information()>
+in a hash of hashes with the host addresses as keys.
+
+The structure of the hash looks like this:
+
+    $addresses = {
+      "10.20.10.14" => {
+        "active" => "1",
+        "net_id" => "632",
+        "primary" => "1",
+        "standard_gateway" => 0,
+        "type" => "IPv4 (Internet Protocol v4)",
+        "type_const" => "C__CATS_NET_TYPE__IPV4",
+      },
+      # ...
+    }
 
 =head2 get_data
 
