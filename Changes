@@ -1,6 +1,8 @@
 Revision history for WebService-IdoitAPI
 
 {{$NEXT}}
+
+0.4.5     2025-03-16 10:34:57+01:00 Europe/Berlin
 	- WebService::IdoitAPI::Layer3Net::list() returns the network
 	  in CIDR notation and the description
 
